@@ -1,0 +1,8 @@
+{
+    "Incident": true,
+    "User": true,
+    "Attachment": true,
+    "AI": true,
+    "Notification": true,
+    "Audit": true
+}
