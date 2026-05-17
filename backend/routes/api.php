@@ -1,9 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HealthController;
 
-Route::get('/', function () {
-    return response()->json([
-        'message' => 'Welcome to the Incident Management API',
-    ]);
-});
+Route::get('/health', HealthController::class);
