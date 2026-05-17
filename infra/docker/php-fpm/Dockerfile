@@ -1,6 +1,9 @@
 ARG PHP_VERSION=8.3
 FROM laradock/php-fpm:latest-${PHP_VERSION}
 
+# Redeclare ARG, which is required if you want to use it in later RUN steps after the FROM instruction.
+ARG PHP_VERSION=8.3
+
 # Set Environment Variables
 ENV DEBIAN_FRONTEND noninteractive
 

@@ -1,11 +1,30 @@
 ARG PHP_VERSION=8.3
 FROM laradock/workspace:latest-${PHP_VERSION}
 
+# Redeclare ARG, which is required if you want to use it in later RUN steps after the FROM instruction.
+ARG PHP_VERSION=8.3
+
 # Set Environment Variables
 ENV DEBIAN_FRONTEND noninteractive
 
 # Start as root
 USER root
+
+###########################################################################
+# Enforce PHP binary version
+###########################################################################
+
+RUN set -eux; \
+  php -v | head -n 1 || true; \
+  ls -la /usr/bin/php* || true; \
+  update-alternatives --display php || true; \
+  if [ -x "/usr/bin/php${PHP_VERSION}" ]; then \
+  update-alternatives --set php /usr/bin/php${PHP_VERSION} || true; \
+  else \
+  echo "Expected /usr/bin/php${PHP_VERSION} not found in base image"; \
+  fi; \
+  echo "PHP after selection:"; \
+  php -v | head -n 1 || true
 
 ###########################################################################
 # Laradock non-root user:
@@ -133,7 +152,7 @@ RUN echo "" >> ~/.bashrc && \
 
 USER root
 
-RUN apt-get update \
+RUN apt-get update -yqq \
   && apt-get install -yqq php${PHP_VERSION}-redis
 
 ###########################################################################
@@ -239,6 +258,13 @@ COPY mc/config.json /root/.mc/config.json
 
 RUN curl -fsSL -o /usr/local/bin/mc https://dl.minio.io/client/mc/release/linux-amd64/mc && \
   chmod +x /usr/local/bin/mc
+
+###########################################################################
+# XML:
+###########################################################################
+
+RUN apt-get update -yqq && \
+  apt-get install -yqq libxml2-dev php${PHP_VERSION}-xml
 
 ###########################################################################
 # Check PHP version:
